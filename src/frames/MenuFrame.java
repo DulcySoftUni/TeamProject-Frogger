@@ -1,6 +1,10 @@
 package frames;
 
+import Objects.Frogg;
 import UI.CustomizedButtonUI;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.IOException;
+import java.util.Stack;
 
 public class MenuFrame extends JFrame implements ActionListener {
 
@@ -120,6 +125,7 @@ public class MenuFrame extends JFrame implements ActionListener {
             System.exit(0);
         } else if (action.getSource() == this.start) {
             //start a new game
+
         } else if (action.getSource() == credits) {
             CreditsWindow cWindow = new CreditsWindow("Credits");
             cWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
