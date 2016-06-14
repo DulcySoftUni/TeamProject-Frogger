@@ -1,21 +1,16 @@
 package frames;
 
-import Objects.Frogg;
+import Objects.FroggerFrame;
+import Objects.Logger;
 import UI.CustomizedButtonUI;
-import javafx.scene.Parent;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.IOException;
-import java.util.Stack;
 
 public class MenuFrame extends JFrame implements ActionListener {
 
@@ -125,7 +120,8 @@ public class MenuFrame extends JFrame implements ActionListener {
             System.exit(0);
         } else if (action.getSource() == this.start) {
             //start a new game
-
+            new Logger();
+            new FroggerFrame();
         } else if (action.getSource() == credits) {
             CreditsWindow cWindow = new CreditsWindow("Credits");
             cWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
