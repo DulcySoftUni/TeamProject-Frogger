@@ -1,7 +1,6 @@
 package frames;
 
 import Objects.FroggerFrame;
-import Objects.Logger;
 import UI.CustomizedButtonUI;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -120,7 +119,6 @@ public class MenuFrame extends JFrame implements ActionListener {
             System.exit(0);
         } else if (action.getSource() == this.start) {
             //start a new game
-            new Logger();
             new FroggerFrame();
         } else if (action.getSource() == credits) {
             CreditsWindow cWindow = new CreditsWindow("Credits");

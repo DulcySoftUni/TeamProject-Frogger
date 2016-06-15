@@ -2,12 +2,8 @@ package Objects;
 
 import javax.swing.*;
 import java.awt.*;
-
-/**
- * @author othscs120
- *         Created on: 11/4/2014 , Time is :  1:28 PM
- *         Part of Project: Frogger
- */
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 public class FroggerFrame extends JFrame {
 
@@ -18,14 +14,33 @@ public class FroggerFrame extends JFrame {
 
 
         // Sets the close button to exit the program
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        // setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        //  Escape should close the window
+        InputMap im = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = getRootPane().getActionMap();
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
+        am.put("cancel", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
 
         // makes the window not able to be resized
         setResizable(false);
+
+        //center frame
+        setSize(FroggerPanel.WIDTH, FroggerPanel.HEIGHT );
+        setLocationRelativeTo(null);
+        setUndecorated(true);
+
         // creates the window
         pack();
+
         // creates the panel
         FroggerPanel p = new FroggerPanel();
+
         // gets the frames insets
         Insets frameInsets = getInsets();
         // calculates panel size
@@ -44,10 +59,5 @@ public class FroggerFrame extends JFrame {
         // shows the frame
         setVisible(true);
 
-
-        Logger.logOtherMessage("Window", "Window Created.");
-
     }
-
-
 }

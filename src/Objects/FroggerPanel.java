@@ -1,6 +1,10 @@
 package Objects;
 
 
+import collision.CollisionDetector;
+import panels.GameOver;
+import panels.YouWin;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -11,29 +15,32 @@ import java.io.File;
 
 public class FroggerPanel extends JPanel implements KeyListener, Runnable {
 
+    public static int HEIGHT = 450;
+    public static int WIDTH = 700;
+    private CollisionDetector checkForCollision;
+
     BufferedImage car1_Left, car1_Right, car2_Left, car2_Right, limo_Left, limo_Right, semi_Left, semi_Right, frogUp, frogDown,
             frogLeft, frogRight, hsTurtle, hmTurtle, hlTurtle, sTurtle, mTurtle, lTurtle, sLog, mLog, lLog, lilyPad, frogLife;
     FroggerGame game;
+
     //BufferedImage buffer;
     int updatesPerSecond;
     int framesPerSecond; //todo used?
 
 
     public FroggerPanel() {
-        setSize(700, 640);
+        setSize(WIDTH, HEIGHT);
+        this.checkForCollision = new CollisionDetector();
 
-        Logger.logCodeMessage("Set size to " + getWidth() + "," + getHeight());
         reset();
         Thread pThread;
 
         try {
             pThread = new Thread(this);
             pThread.start();
-            Logger.logCodeMessage("Successfully set up thread.");
         } catch (Exception e) {
             System.err.println("Error creating thread.");
             e.printStackTrace();
-            Logger.logErrorMessage("Error creating thread. Stopping.");
             System.exit(-2);
         }
 
@@ -62,11 +69,9 @@ public class FroggerPanel extends JPanel implements KeyListener, Runnable {
             lilyPad = ImageIO.read((new File("src/textures/lilyPad.png")));
             frogLife = ImageIO.read((new File("src/textures/FrogLife.png")));
 
-            Logger.logOtherMessage("ImageLoader", "Succeeded.");
         } catch (Exception e) {
             System.err.println("Error Loading Images: " + e.getMessage());
             e.printStackTrace();
-            Logger.logErrorMessage("Error with loading images. Exiting...");
             System.exit(-1); //if loading fails, end the program.
         }
         addKeyListener(this);
@@ -91,10 +96,24 @@ public class FroggerPanel extends JPanel implements KeyListener, Runnable {
             update();
             repaint();
             try {
+                if (game.DEAD) {
+                    GameOver gameOver;
+                    gameOver = new GameOver(0); //
+                    gameOver.setBounds(0, 0, WIDTH, HEIGHT);
+                    this.getParent().getParent().add(gameOver, new Integer(2), 0);
+                    Thread.sleep(1000000000000000000L);
+                }
+                if (game.WIN) {
+                    YouWin youWin;
+                    youWin = new YouWin(true, 0); //
+                    youWin.setBounds(0, 0, WIDTH, HEIGHT);
+                    this.getParent().getParent().add(youWin, new Integer(2), 0);
+                    Thread.sleep(1000000000000000000L);
+                }
                 Thread.sleep(35); //todo correct times per second?
+
             } catch (Exception e) {
                 System.err.println("Error Sleeping.");
-                Logger.logErrorMessage("Error Sleeping Thread.");
             }
         }
     }
@@ -127,39 +146,49 @@ public class FroggerPanel extends JPanel implements KeyListener, Runnable {
     public void paint(Graphics g) {
         g.setColor(Color.green);
         g.fillRect(0, 0, getWidth(), getHeight()); //fill the background
-        g.setColor(Color.BLUE); //fill water on upper part of map
-        g.fillRect(0, 65, getWidth(), 190);
-        //small water inlets for lilypads----------
-        g.fillRect(60, 20, 70, 50);
-        g.fillRect(240, 20, 70, 50);
-        g.fillRect(420, 20, 70, 50);
-        g.fillRect(600, 20, 70, 50);
+
+//        g.setColor(Color.BLUE); //fill water on upper part of map
+//        g.fillRect(0, 65, getWidth(), 190);
+
+//        //small water inlets for lilypads----------
+//        g.fillRect(60, 20, 70, 50);
+//        g.fillRect(240, 20, 70, 50);
+//        g.fillRect(420, 20, 70, 50);
+//        g.fillRect(600, 20, 70, 50);
+
         //white lines of the road-------------------
         g.setColor(Color.white);
-        g.drawLine(0, 300, getWidth(), 300);
-        g.drawLine(0, 500, getWidth(), 500);
+        g.drawLine(0, 75, getWidth(), 75);
+        g.drawLine(0, 275, getWidth(), 275);
         //road--------------------------------------
         g.setColor(Color.GRAY);
-        g.fillRect(0, 301, getWidth(), 199);
+        g.fillRect(0, 76, getWidth(), 199);
         //bottom black bar----------------------
         g.setColor(Color.BLACK);
-        g.fillRect(0, getHeight() - 100, getWidth(), getHeight());
+        g.fillRect(0, getHeight() - 100, getWidth(), 300);
         //yellow lines on road----------------
         g.setColor(Color.yellow);
-        for (int y = 341; y < 489; y += 39) {
+        for (int y = 116; y < 264; y += 39) {
             for (int x = 10; x < getWidth() - 10; x += 90) {
                 g.fillRect(x, y, 60, 4);
             }
         }
-        //lilypads------------------------------
-        for (int i = 75; i <= 615; i += 179)
-            g.drawImage(lilyPad, i, 30, null);
+
+//        //lilypads------------------------------
+//        for (int i = 75; i <= 615; i += 179)
+//            g.drawImage(lilyPad, i, 30, null);
 
         //text----------------------------------
-        g.setColor(Color.RED);
+        g.setColor(Color.darkGray);
         g.setFont(new Font("Arial", Font.CENTER_BASELINE, 40));
-        g.drawString("Livers:", 10, getHeight() - 15);
+        g.drawString("Lives:", 10, getHeight() - 15);
         g.drawString("Time Left:", 300, getHeight() - 15);
+
+        //lives---------------------------------
+        g.setColor(Color.RED);
+        for (int i = 0; i < game.getLives(); i++) {
+            g.drawString("♥", 130 + i * 30, getHeight() - 15);
+        }
 
         //time left----------------
         int i = game.getTimeLeft();
@@ -174,6 +203,10 @@ public class FroggerPanel extends JPanel implements KeyListener, Runnable {
         g.drawRect(500, getHeight() - 40, 170, 20); //timer outline
 
         //draw frog --------------------------
+        //see the bounding box
+//        Rectangle boundingBox = game.getPlayer().getBoundingBox();
+//        g.setColor(Color.black);
+//        g.drawRect( (int) boundingBox.getX(), (int) boundingBox.getY(), (int) boundingBox.getWidth(), (int) boundingBox.getHeight());
         switch (game.getPlayer().getDirection()) { //draw frog based on direction
             case Frog.UP:
                 g.drawImage(frogUp, game.getPlayer().getX(), game.getPlayer().getY(), null);
@@ -188,6 +221,7 @@ public class FroggerPanel extends JPanel implements KeyListener, Runnable {
                 g.drawImage(frogRight, game.getPlayer().getX(), game.getPlayer().getY(), null);
                 break;
         }
+
         //MOVING OBJECTS ---------------------------------------
         //cars ------------
         for (CarLane cl : game.getCarLanes()) //all car lanes
@@ -211,6 +245,11 @@ public class FroggerPanel extends JPanel implements KeyListener, Runnable {
                 } else if (cl.laneItems.get(p).getDirection() == Lane.RIGHT && cl.laneItems.get(p).getType() == Car.SEMI) {
                     g.drawImage(semi_Right, (int) cl.laneItems.get(p).getX(), (int) cl.laneItems.get(p).getY(), null);
                 }
+
+                //See the bounding box
+//                g.setColor(Color.BLACK);
+//                Rectangle boudingBoxe = cl.laneItems.get(p).getBoundingBox();
+//                g.drawRect((int) boudingBoxe.getX(), (int) boudingBoxe.getY(), (int) boudingBoxe.getWidth(), (int) boudingBoxe.getHeight());
             }
         }
     }
@@ -222,7 +261,6 @@ public class FroggerPanel extends JPanel implements KeyListener, Runnable {
     public void addNotify() {
         super.addNotify();
         requestFocus();
-        Logger.logCodeMessage("Requested focus on the window.");
     }
 
     void reset() {

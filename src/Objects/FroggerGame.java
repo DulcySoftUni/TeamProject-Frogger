@@ -1,9 +1,14 @@
 package Objects;
 
+import collision.CollisionDetector;
 
 public class FroggerGame {
 
-    public static final int PLAYING = 0, DEAD = 1, PLAYER_WINS = 2, MAX_LIFE_TIME = 80;
+    public static final int PLAYING = 0, PLAYER_WINS = 2, MAX_LIFE_TIME = 80;
+    public static boolean DEAD = false;
+    public static boolean WIN = false;
+    public static final int frogX = 320, frogY = 275;
+    public static final int CarLaneInitialY = 75;
 
     int status, lives, startLifeTime;
     boolean reachedMiddle;
@@ -16,21 +21,25 @@ public class FroggerGame {
         status = FroggerGame.PLAYING;
         reachedMiddle = false;
         lives = 3;
-        player = new Frog(320, 500);
+        player = new Frog(frogX, frogY);
+
         //lilly pads------------------------
         lilyPadses = new LilyPad[4];
         lilyPadses[0] = new LilyPad(75, 30);
         lilyPadses[1] = new LilyPad(254, 30);
         lilyPadses[2] = new LilyPad(433, 30);
         lilyPadses[3] = new LilyPad(612, 30);
+
         //log and car lanes -------------
         carLanes = new CarLane[5];
         logLanes = new LogLane[1];
-        carLanes[0] = new CarLane(3, Lane.RIGHT, 300);
-        carLanes[1] = new CarLane(3, Lane.LEFT, 340);
-        carLanes[2] = new CarLane(3, Lane.RIGHT, 380);
-        carLanes[3] = new CarLane(3, Lane.LEFT, 420);
-        carLanes[4] = new CarLane(3, Lane.RIGHT, 460);
+
+        for (int i = 0; i < carLanes.length; i++) {
+            if (i % 2 == 0)
+            carLanes[i] = new CarLane(3, Lane.RIGHT, CarLaneInitialY + i * 40);
+            else
+                carLanes[i] = new CarLane(3, Lane.LEFT, CarLaneInitialY + i * 40);
+        }
 
         logLanes[0] = new LogLane(1, Lane.RIGHT, 200);
 
@@ -49,7 +58,6 @@ public class FroggerGame {
         for (int u = 0; u < carLanes.length; u++)
             carLanes[u].update();
         for (int y = 0; y < carLanes.length; y++)
-            //logLanes[y].update();
             runChecks();
     }
 
@@ -85,14 +93,23 @@ public class FroggerGame {
     }
 
     void playerDeath() {
-        /*Updates the lives, player position and status
-        anytime the player dies
-        */
+        lives--;
+        if (lives > 0) {
+            player.setX(frogX);
+            player.setY(frogY);
+        }
+        else {
+            DEAD = true;
+        }
     }
 
     void carCheck() {
-        //todo kills player when contacting car
-    }
+        //todo kills player when contacting car{
+            if (CollisionDetector.CollisionDetector(this.getPlayer(), this.getCarLanes())) {
+                playerDeath();
+            }
+        }
+
 
     void logCheck() {
         //todo moves player if on log with log, otherwise kills
@@ -114,9 +131,19 @@ public class FroggerGame {
          */
     }
 
-    void runChecks() {
-        //todo calls correct check methods based on y pos
+    void checkifThePlayerWin(){
+        if (this.player.getY() <= 75){
+            WIN = true;
+        }
     }
+
+    void runChecks() {
+        carCheck();
+        checkifThePlayerWin();
+
+    }
+
+
 
 
 }

@@ -1,6 +1,5 @@
 package Objects;
 
-
 public class Car extends LaneItem {
 
     public static final int SEMI = 0, LIMO = 1, CAR_1 = 2, CAR_2 = 3;
@@ -9,11 +8,6 @@ public class Car extends LaneItem {
         super(speed, type, direction, x, y);
     }
 
-    /**
-     * Gets length based on type of car
-     *
-     * @return int of the length based on car type.
-     */
     public int getWidth() {
         if (type == CAR_1)
             return 40;

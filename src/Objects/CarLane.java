@@ -12,6 +12,7 @@ public class CarLane extends Lane {
         super.update();
         int carType = (int) (Math.random() * 4);
         int length;
+
         switch (carType) {
             case Car.SEMI: //if semi
                 length = 120;

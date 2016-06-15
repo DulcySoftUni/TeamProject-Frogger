@@ -34,7 +34,6 @@ public class Lane {
     }
 
     void update() {
-        //System.out.println("Moving all objects");
         for (LaneItem laneItem : laneItems) {
             laneItem.update();
         }

@@ -1,15 +1,19 @@
 package Objects;
 
+import java.awt.*;
 
 public class Frog {
 
     public static final int LEFT = 0, RIGHT = 1, DOWN = 2, UP = 3, WIDTH = 22;
+    private Rectangle boundingBox;
     private int x, y, direction;
+
 
     public Frog(int x, int y) {
         direction = UP;
         this.x = x;
         this.y = y;
+        this.boundingBox = new Rectangle(this.x + 7, this.y + 9, 24, 24);
     }
 
     public int getY() {
@@ -18,6 +22,7 @@ public class Frog {
 
     public void setY(int y) {
         this.y = y;
+        this.boundingBox = new Rectangle(this.x + 7, this.y + 9, 24, 24);
     }
 
     public int getX() {
@@ -26,6 +31,7 @@ public class Frog {
 
     public void setX(int x) {
         this.x = x;
+        this.boundingBox = new Rectangle(this.x + 7, this.y + 9, 24, 24);
     }
 
     public int getHitX() {
@@ -38,6 +44,10 @@ public class Frog {
 
     public void setDirection(int direction) {
         this.direction = direction;
+    }
+
+    public Rectangle getBoundingBox(){
+        return this.boundingBox;
     }
 
 }
